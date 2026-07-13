@@ -1,0 +1,41 @@
+services:
+  app:
+    container_name: community_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 10001:10001
+    environment:
+      - APP_PORT=10001
+      - DB_HOST=shared_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=community_db
+      - CACHE_HOST=shared_cache
+      - CACHE_PORT=6379
+      - MQ_URL=amqp://guest:guest@shared_mq:5672/
+    networks:
+      - lab3_shared_network
+
+  outbox_relay:
+    container_name: community_outbox_relay
+    build:
+      context: ../outbox-relay
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - DB_HOST=shared_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=community_db
+      - MQ_URL=amqp://guest:guest@shared_mq:5672/
+    networks:
+      - lab3_shared_network
+
+networks:
+  lab3_shared_network:
+    external: true
