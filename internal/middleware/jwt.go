@@ -12,6 +12,7 @@ type CustomClaims struct {
 	Email     string
 	Role      string
 	SessionID string
+	UserID    string
 }
 
 func JWTMiddleware(secretKey string) echo.MiddlewareFunc {
