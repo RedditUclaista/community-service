@@ -1,0 +1,15 @@
+meta {
+  name: Get User Communities
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:10001/api/v1/users/{{target_user_id}}/communities
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

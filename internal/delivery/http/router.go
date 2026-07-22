@@ -6,11 +6,19 @@ import (
 )
 
 func SetupRoutes(app *echo.Echo, h *CommunityHandler, jwtSecret string) {
-	v1 := app.Group("/api/v1")
+	api := app.Group("/api/community")
 
 	jwtMd := middleware.JWTMiddleware(jwtSecret)
-	adminOrProf := middleware.RequireRole("ADMIN", "PROFESSOR", "STUDENT")
 
-	v1.GET("/communities", h.List, jwtMd)
-	v1.POST("/communities", h.Create, jwtMd, adminOrProf)
+	api.GET("/communities", h.List)
+	api.POST("/communities", h.Create, jwtMd)
+	api.PUT("/communities/:id", h.Update, jwtMd)
+
+	api.POST("/communities/:id/members", h.Join, jwtMd)
+	api.DELETE("/communities/:id/members/:user_id", h.Leave, jwtMd)
+	api.PATCH("/communities/:id/members/:user_id/role", h.ChangeRole, jwtMd)
+	api.GET("/communities/:id/members", h.GetMembers)
+	api.GET("/communities/:id/members/:user_id/role", h.GetMemberRole)
+
+	api.GET("/users/:user_id/communities", h.GetUserCommunities)
 }

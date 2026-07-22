@@ -13,6 +13,8 @@ type Config struct {
 	DBPass        string
 	DBName        string
 	JWTSecretKey  string
+	MQURL         string
+	MQVHost       string
 }
 
 func LoadConfig() *Config {
@@ -25,6 +27,8 @@ func LoadConfig() *Config {
 		DBPass:       getEnv("DB_PASS", "postgres"),
 		DBName:       getEnv("DB_NAME", "community"),
 		JWTSecretKey: getEnv("JWT_SECRET_ACCESS_KEY", "esto es una key re segura"),
+		MQURL:        getEnv("MQ_URL", "amqp://guest:guest@localhost:5672/"),
+		MQVHost:      getEnv("MQ_VHOST", "/"),
 	}
 }
 

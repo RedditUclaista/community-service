@@ -1,0 +1,24 @@
+meta {
+  name: Update Community
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:10001/api/v1/communities/{{community_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "description": "Nueva descripcion actualizada",
+    "rules": "Regla 1: No spam.",
+    "banner_url": "",
+    "profile_url": ""
+  }
+}

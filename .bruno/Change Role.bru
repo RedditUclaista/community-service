@@ -1,0 +1,21 @@
+meta {
+  name: Change Role
+  type: http
+  seq: 6
+}
+
+patch {
+  url: http://localhost:10001/api/v1/communities/{{community_id}}/members/{{target_user_id}}/role
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "role": "MODERATOR"
+  }
+}

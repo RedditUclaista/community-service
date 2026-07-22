@@ -1,0 +1,15 @@
+meta {
+  name: List Communities
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:10001/api/v1/communities
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

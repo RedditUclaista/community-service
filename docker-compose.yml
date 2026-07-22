@@ -6,17 +6,17 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - 10001:10001
+      - ${APP_PORT}:${APP_PORT}
     environment:
-      - APP_PORT=10001
-      - DB_HOST=shared_db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=community_db
-      - CACHE_HOST=shared_cache
-      - CACHE_PORT=6379
-      - MQ_URL=amqp://guest:guest@shared_mq:5672/
+      - APP_PORT=${APP_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - CACHE_HOST=${CACHE_HOST}
+      - CACHE_PORT=${CACHE_PORT}
+      - MQ_URL=${MQ_URL}
     networks:
       - lab3_shared_network
 
@@ -27,12 +27,15 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      - DB_HOST=shared_db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=community_db
-      - MQ_URL=amqp://guest:guest@shared_mq:5672/
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - MQ_URL=${MQ_URL}
+      - SERVICE_NAME=${APP_NAME}
+      - MQ_VHOST=${MQ_VHOST}
+      - POLL_INTERVAL_MS=${POLL_INTERVAL_MS}
     networks:
       - lab3_shared_network
 

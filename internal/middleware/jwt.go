@@ -41,6 +41,7 @@ func JWTMiddleware(secretKey string) echo.MiddlewareFunc {
 			if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
 				c.Set("user_email", claims.Email)
 				c.Set("user_role", claims.Role)
+				c.Set("user_id", claims.UserID)
 				return next(c)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid token claims")
