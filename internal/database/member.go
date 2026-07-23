@@ -19,6 +19,8 @@ func NewMemberRepository(pool *pgxpool.Pool) *MemberRepository {
 }
 
 func (r *MemberRepository) Subscribe(ctx context.Context, tx pgx.Tx, m *entities.CommunityMember) error {
+	_, _ = tx.Exec(ctx, `INSERT INTO PUBLIC."USER" (ID) VALUES ($1) ON CONFLICT (ID) DO NOTHING;`, m.UserID)
+
 	ib := sqlbuilder.PostgreSQL.NewInsertBuilder()
 	ib.InsertInto(`PUBLIC."COMMUNITY_MEMBER"`)
 	ib.Cols("COMMUNITY_ID", "USER_ID", "ROLE", "JOINED_AT")
