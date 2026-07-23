@@ -16,7 +16,8 @@ services:
       - DB_NAME=${DB_NAME}
       - CACHE_HOST=${CACHE_HOST}
       - CACHE_PORT=${CACHE_PORT}
-      - MQ_URL=${MQ_URL}
+      - MQ_URL=amqp://guest:guest@lab3_mq:5672/core
+      - JWT_SECRET_ACCESS_KEY=esto es una key re segura
     networks:
       - lab3_shared_network
 
@@ -30,12 +31,12 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASS}
+      - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
-      - MQ_URL=${MQ_URL}
-      - SERVICE_NAME=${APP_NAME}
-      - MQ_VHOST=${MQ_VHOST}
-      - POLL_INTERVAL_MS=${POLL_INTERVAL_MS}
+      - MQ_URL=amqp://guest:guest@lab3_mq:5672/core
+      - SERVICE_NAME=community
+      - MQ_VHOST=core
+      - POLL_INTERVAL_MS=500
     networks:
       - lab3_shared_network
 

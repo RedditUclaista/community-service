@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -26,7 +27,10 @@ func (h *CommunityHandler) Create(c *echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid format"})
 	}
 
+	fmt.Println(req)
+
 	userIDStr, ok := c.Get("user_id").(string)
+	fmt.Println(userIDStr)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
@@ -62,6 +66,32 @@ func (h *CommunityHandler) Update(c *echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "not found"})
 	}
 	return c.JSON(http.StatusOK, comm)
+}
+
+func (h *CommunityHandler) GetCommunitiesBulk(c *echo.Context) error {
+	var req dto.RequestBulkCommunities
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+	}
+
+	communities, err := h.commUc.GetCommunitiesBulk(c.Request().Context(), &req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	var res dto.CommunityListRes
+	for _, comm := range communities {
+		res.Communities = append(res.Communities, dto.CommunityRes{
+			ID:          comm.ID,
+			Name:        comm.Name,
+			Description: comm.Description,
+			Rules:       comm.Rules,
+			BannerURL:   comm.BannerURL,
+			ProfileURL:  comm.ProfileURL,
+			CreatedBy:   comm.CreatedBy,
+		})
+	}
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *CommunityHandler) List(c *echo.Context) error {

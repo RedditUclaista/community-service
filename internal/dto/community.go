@@ -17,6 +17,14 @@ type UpdateCommunityReq struct {
 	ProfileURL  *string `json:"profile_url"`
 }
 
+type ListCommunitiesResponse struct {
+	Communities []CommunityRes `json:"communities"`
+}
+
+type RequestBulkCommunities struct {
+	IDs []uuid.UUID `json:"ids"`
+}
+
 type CommunityListRes struct {
 	Communities []CommunityRes `json:"communities"`
 	NextCursor  *string        `json:"next_cursor,omitempty"`

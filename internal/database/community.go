@@ -9,6 +9,7 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	dbsql "database/sql"
 )
 
 type CommunityRepository struct {
@@ -56,7 +57,14 @@ func (r *CommunityRepository) GetByID(ctx context.Context, id uuid.UUID) (*entit
 	row := r.pool.QueryRow(ctx, sql, args...)
 
 	var c entities.Community
-	err := row.Scan(&c.ID, &c.Name, &c.Description, &c.Rules, &c.BannerURL, &c.ProfileURL, &c.CreatedBy, &c.Active, &c.CreatedAt)
+	var desc, rules, bannerURL, profileURL dbsql.NullString
+	err := row.Scan(&c.ID, &c.Name, &desc, &rules, &bannerURL, &profileURL, &c.CreatedBy, &c.Active, &c.CreatedAt)
+	if err == nil {
+		c.Description = desc.String
+		c.Rules = rules.String
+		c.BannerURL = bannerURL.String
+		c.ProfileURL = profileURL.String
+	}
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil
@@ -92,9 +100,52 @@ func (r *CommunityRepository) SearchPaginated(ctx context.Context, queryStr stri
 	var communities []entities.Community
 	for rows.Next() {
 		var c entities.Community
-		if err := rows.Scan(&c.ID, &c.Name, &c.Description, &c.Rules, &c.BannerURL, &c.ProfileURL, &c.CreatedBy, &c.Active, &c.CreatedAt); err != nil {
+		var desc, rules, bannerURL, profileURL dbsql.NullString
+		if err := rows.Scan(&c.ID, &c.Name, &desc, &rules, &bannerURL, &profileURL, &c.CreatedBy, &c.Active, &c.CreatedAt); err != nil {
 			return nil, err
 		}
+		c.Description = desc.String
+		c.Rules = rules.String
+		c.BannerURL = bannerURL.String
+		c.ProfileURL = profileURL.String
+		communities = append(communities, c)
+	}
+	return communities, nil
+}
+
+func (r *CommunityRepository) GetCommunitiesBulk(ctx context.Context, ids []uuid.UUID) ([]entities.Community, error) {
+	if len(ids) == 0 {
+		return []entities.Community{}, nil
+	}
+
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+	sb.Select("ID", "NAME", "DESCRIPTION", "RULES", "BANNER_URL", "PROFILE_URL", "CREATED_BY", "ACTIVE", "CREATED_AT")
+	sb.From(`PUBLIC."COMMUNITY"`)
+	
+	var interfaceIds []interface{}
+	for _, id := range ids {
+		interfaceIds = append(interfaceIds, id)
+	}
+	sb.Where(sb.In("ID", interfaceIds...))
+
+	sql, args := sb.Build()
+	rows, err := r.pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var communities []entities.Community
+	for rows.Next() {
+		var c entities.Community
+		var desc, rules, bannerURL, profileURL dbsql.NullString
+		if err := rows.Scan(&c.ID, &c.Name, &desc, &rules, &bannerURL, &profileURL, &c.CreatedBy, &c.Active, &c.CreatedAt); err != nil {
+			return nil, err
+		}
+		c.Description = desc.String
+		c.Rules = rules.String
+		c.BannerURL = bannerURL.String
+		c.ProfileURL = profileURL.String
 		communities = append(communities, c)
 	}
 	return communities, nil

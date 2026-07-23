@@ -13,6 +13,7 @@ type CommunityRepository interface {
 	Update(ctx context.Context, tx pgx.Tx, c *entities.Community) error
 	GetByID(ctx context.Context, id uuid.UUID) (*entities.Community, error)
 	SearchPaginated(ctx context.Context, query string, limit int, offset int) ([]entities.Community, error)
+	GetCommunitiesBulk(ctx context.Context, ids []uuid.UUID) ([]entities.Community, error)
 }
 
 type MemberRepository interface {

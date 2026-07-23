@@ -11,6 +11,7 @@ func SetupRoutes(app *echo.Echo, h *CommunityHandler, jwtSecret string) {
 	jwtMd := middleware.JWTMiddleware(jwtSecret)
 
 	api.GET("/communities", h.List)
+	api.POST("/communities/bulk", h.GetCommunitiesBulk)
 	api.POST("/communities", h.Create, jwtMd)
 	api.PUT("/communities/:id", h.Update, jwtMd)
 

@@ -55,7 +55,10 @@ func NewConsumer(mqURL string, vhost string, uc *usecases.UserUseCase) (*Consume
 func (c *Consumer) Start(ctx context.Context) error {
 	exchangeName := "topic"
 	queueName := "community_service.core.user.registered"
-	routingKey := "core.user.registered"
+	routingKeys := []string{
+		"core.user.registered.#",
+		"core.user.registered",
+	}
 
 	err := c.channel.ExchangeDeclare(
 		exchangeName,
@@ -91,15 +94,17 @@ func (c *Consumer) Start(ctx context.Context) error {
 		return fmt.Errorf("failed to declare processing queue: %w", err)
 	}
 
-	err = c.channel.QueueBind(
-		q.Name,
-		routingKey,
-		exchangeName,
-		false,
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to bind queue topology: %w", err)
+	for _, key := range routingKeys {
+		err = c.channel.QueueBind(
+			q.Name,
+			key,
+			exchangeName,
+			false,
+			nil,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to bind queue topology to exchange for key %s: %w", key, err)
+		}
 	}
 
 	msgs, err := c.channel.Consume(

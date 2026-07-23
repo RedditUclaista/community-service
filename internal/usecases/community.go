@@ -158,3 +158,7 @@ func (uc *CommunityUseCase) Update(ctx context.Context, id uuid.UUID, req dto.Up
 func (uc *CommunityUseCase) SearchPaginated(ctx context.Context, query string, limit, offset int) ([]entities.Community, error) {
 	return uc.commRepo.SearchPaginated(ctx, query, limit, offset)
 }
+
+func (uc *CommunityUseCase) GetCommunitiesBulk(ctx context.Context, req *dto.RequestBulkCommunities) ([]entities.Community, error) {
+	return uc.commRepo.GetCommunitiesBulk(ctx, req.IDs)
+}
