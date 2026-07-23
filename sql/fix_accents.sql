@@ -1,0 +1,5 @@
+SET client_encoding = 'UTF8';
+
+UPDATE "COMMUNITY" SET name = 'Informática UCLA' WHERE id = '019f8800-0001-7000-8000-000000000001';
+UPDATE "COMMUNITY" SET name = 'Desarrollo Web & Móvil' WHERE id = '019f8800-0002-7000-8000-000000000002';
+UPDATE "COMMUNITY" SET name = 'Inteligencia Artificial & Data' WHERE id = '019f8800-0003-7000-8000-000000000003';
